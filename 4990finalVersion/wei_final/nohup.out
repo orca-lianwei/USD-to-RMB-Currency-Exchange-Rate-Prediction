@@ -1,0 +1,50 @@
+PHP 7.0.15-0ubuntu0.16.04.4 Development Server started at Thu May 11 14:37:34 2017
+Listening on http://192.168.0.28:8055
+Document root is /home/muhan/wei_final
+Press Ctrl-C to quit.
+[Thu May 11 14:37:49 2017] 192.168.0.44:59064 [200]: /
+[Thu May 11 14:37:49 2017] 192.168.0.44:59065 [404]: /css.css - No such file or directory
+[Thu May 11 14:37:49 2017] 192.168.0.44:59066 [200]: /lib/canvasjs.min.js
+[Thu May 11 14:37:49 2017] 192.168.0.44:59067 [200]: /lib/jquery.canvasjs.min.js
+[Thu May 11 14:37:49 2017] 192.168.0.44:59068 [200]: /lib/loading.gif
+/usr/local/lib/python2.7/dist-packages/matplotlib/cbook.py:136: MatplotlibDeprecationWarning: The finance module has been deprecated in mpl 2.0 and will be removed in mpl 2.2. Please use the module mpl_finance instead.
+  warnings.warn(message, mplDeprecation, stacklevel=1)
+[Thu May 11 14:37:49 2017] 192.168.0.44:59069 [200]: /default_figure.php
+[Thu May 11 14:37:51 2017] 192.168.0.44:59072 [200]: /garch.php
+/usr/local/lib/python2.7/dist-packages/matplotlib/cbook.py:136: MatplotlibDeprecationWarning: The finance module has been deprecated in mpl 2.0 and will be removed in mpl 2.2. Please use the module mpl_finance instead.
+  warnings.warn(message, mplDeprecation, stacklevel=1)
+/usr/local/lib/python2.7/dist-packages/statsmodels/base/model.py:473: HessianInversionWarning: Inverting hessian failed, no bse or cov_params available
+  'available', HessianInversionWarning)
+[Thu May 11 14:37:52 2017] 192.168.0.44:59070 [200]: /predict.php
+[Thu May 11 14:37:52 2017] 192.168.0.44:59073 [200]: /
+[Thu May 11 14:37:52 2017] 192.168.0.44:59074 [404]: /css.css - No such file or directory
+[Thu May 11 14:37:52 2017] 192.168.0.44:59075 [200]: /lib/canvasjs.min.js
+[Thu May 11 14:37:52 2017] 192.168.0.44:59076 [200]: /lib/jquery.canvasjs.min.js
+[Thu May 11 14:37:52 2017] 192.168.0.44:59077 [200]: /lib/loading.gif
+/usr/local/lib/python2.7/dist-packages/matplotlib/cbook.py:136: MatplotlibDeprecationWarning: The finance module has been deprecated in mpl 2.0 and will be removed in mpl 2.2. Please use the module mpl_finance instead.
+  warnings.warn(message, mplDeprecation, stacklevel=1)
+[Thu May 11 14:37:53 2017] 192.168.0.44:59078 [200]: /default_figure.php
+/usr/local/lib/python2.7/dist-packages/matplotlib/cbook.py:136: MatplotlibDeprecationWarning: The finance module has been deprecated in mpl 2.0 and will be removed in mpl 2.2. Please use the module mpl_finance instead.
+  warnings.warn(message, mplDeprecation, stacklevel=1)
+/usr/local/lib/python2.7/dist-packages/statsmodels/base/model.py:473: HessianInversionWarning: Inverting hessian failed, no bse or cov_params available
+  'available', HessianInversionWarning)
+[Thu May 11 14:37:54 2017] 192.168.0.44:59079 [200]: /predict.php
+[Thu May 11 14:37:56 2017] 192.168.0.44:59080 [200]: /garch.php
+PHP 7.0.15-0ubuntu0.16.04.4 Development Server started at Thu May 11 14:37:48 2017
+Listening on http://192.168.0.28:8055
+Document root is /home/muhan/wei_final
+Press Ctrl-C to quit.
+[Thu May 11 14:38:11 2017] 192.168.0.44:59082 [200]: /
+[Thu May 11 14:38:11 2017] 192.168.0.44:59083 [404]: /css.css - No such file or directory
+[Thu May 11 14:38:11 2017] 192.168.0.44:59084 [200]: /lib/canvasjs.min.js
+[Thu May 11 14:38:11 2017] 192.168.0.44:59085 [200]: /lib/jquery.canvasjs.min.js
+[Thu May 11 14:38:11 2017] 192.168.0.44:59086 [200]: /lib/loading.gif
+/usr/local/lib/python2.7/dist-packages/matplotlib/cbook.py:136: MatplotlibDeprecationWarning: The finance module has been deprecated in mpl 2.0 and will be removed in mpl 2.2. Please use the module mpl_finance instead.
+  warnings.warn(message, mplDeprecation, stacklevel=1)
+[Thu May 11 14:38:12 2017] 192.168.0.44:59087 [200]: /default_figure.php
+/usr/local/lib/python2.7/dist-packages/matplotlib/cbook.py:136: MatplotlibDeprecationWarning: The finance module has been deprecated in mpl 2.0 and will be removed in mpl 2.2. Please use the module mpl_finance instead.
+  warnings.warn(message, mplDeprecation, stacklevel=1)
+/usr/local/lib/python2.7/dist-packages/statsmodels/base/model.py:473: HessianInversionWarning: Inverting hessian failed, no bse or cov_params available
+  'available', HessianInversionWarning)
+[Thu May 11 14:38:13 2017] 192.168.0.44:59089 [200]: /predict.php
+[Thu May 11 14:38:15 2017] 192.168.0.44:59090 [200]: /garch.php

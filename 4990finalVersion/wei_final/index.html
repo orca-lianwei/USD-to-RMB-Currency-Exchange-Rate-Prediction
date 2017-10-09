@@ -1,0 +1,344 @@
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.0/jquery.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="css.css">
+    <script type="text/javascript" src="lib/canvasjs.min.js"></script>
+    <script type="text/javascript" src="lib/jquery.canvasjs.min.js"></script>
+</head>
+<body>
+<script>
+function main(){
+//get default_figure
+    $.get('default_figure.php',function(data){
+        //data: a list like [[o,h,l,c],[o,h,l,c]]
+        if(data.length <= 1) {
+            alert("failed to get data!")
+            exit();
+        }
+        data = eval(data)
+        make_chart(data);
+    })
+//get default_prediction
+    $.get('predict.php',function(data){
+        if(data.length <= 1){
+            alert('failed to get data!')
+            exit();
+        }
+        data = eval(data);
+        make_prediction(data);
+    })
+//make the rate today
+    $.get('http://api.fixer.io/latest?base=USD',function(data){
+        var rate = JSON.parse(data.rates.CNY);
+        var text = "Current Rate: "
+        text += rate.toString();
+        var currency = $('#currency option:selected').val();
+        text += " " + currency + " : 1 USD.";
+        $('#current_rate').text(text);
+    })
+    garch();
+}//end main
+
+function make_prediction(data){
+    var data_points = [];
+    for(var i = 0;i < data.length;++i){
+        var entry = {};
+        entry.x = new Date(data[i][0]);
+        entry.y = data[i][1];
+        data_points.push(entry);
+    }
+    var chart = new CanvasJS.Chart("prediction_chart",
+	{
+		title:{
+			text: "Prediction Chart",
+		},
+		exportEnabled: true,
+		exportFileName: "Prediction Chart",
+		axisY: {
+			includeZero:false,
+			prefix: "$",
+			title: "rate",
+		},     
+		axisX: {
+			interval:1,
+			//intervalType: "month",
+			valueFormatString: "YY-MMM-DD",
+		},
+		data: [
+		{
+			type: "line",
+            dataPoints: data_points
+		}
+		]
+	});
+	chart.render();
+	suggest(data_points)
+}//end make prediction
+
+function suggest(arg){
+    var ans = 0;
+    var now = new Date();
+    var i;
+    for(i in arg){
+        if(arg[i].x > now)break;
+    }
+    //i: first day after today
+    try{
+        if(arg[i].y < arg[i+1].y && arg[i+1].y < arg[i+2].y)
+        ans = 1;
+    }
+    catch(e){ ans = 0;}
+    var currency = $('#currency option:selected').val();
+    var text = "Our suggestion: ";
+    if(ans === 0) text += "do not exchange " + currency + " to USD now.";
+    else text += "exchange " +currency+" to USD now.";
+    $("#suggest").text(text);
+}//end suggest
+
+function update_prediction(){
+    $('#prediction_chart').empty().append("<img src='./lib/loading.gif' alt='loading'>")
+    var days = $('#predict_days').val();
+    var currency = $('#currency option:selected').val();//define the currency to obtain.
+    var parameters = {};
+    parameters.predict_days = days;
+    parameters.currency = currency;
+    $.get('predict.php',parameters,function(data){
+        if(data.length <= 1){
+            alert('failed to get data!')
+            exit();
+        }
+        data = eval(data);
+        make_prediction(data);
+    })
+}//update prediction
+
+function make_chart(data) {
+//data: a list like [[o,h,l,c],[o,h,l,c]]
+    var data_points = []
+    for(var i = 0;i < data.length;++i){
+        var entry = {};
+        entry.x = new Date(data[i][0]);
+        entry.y = data[i].slice(1,5);
+        data_points.push(entry);
+    }
+	var chart = new CanvasJS.Chart("rate_chart",
+	{
+		title:{
+			text: "Rate Chart",
+		},
+		exportEnabled: true,
+		exportFileName: "Rate Chart",
+		axisY: {
+			includeZero:false,
+			prefix: "$",
+			title: "rate",
+		},     
+		axisX: {
+			interval:1,
+			intervalType: "month",
+			valueFormatString: "YY-MMM-DD",
+		},
+		data: [
+		{
+			type: "candlestick",
+            /*
+			dataPoints: [   // Y: [Open, High ,Low, Close]
+				{x: new Date('2012-09-01'), y: [49.36, 49.99, 42.58, 43.42]},
+				{x: new Date('2012-10-01'), y: [43.82, 44.75, 41.59, 44.45]},
+				{x: new Date('2012-11-01'), y: [44.25, 44.40, 41.18, 42.30]}		
+			]
+            */
+            dataPoints: data_points
+		}
+		]
+	});
+	chart.render()
+	var close_num = []
+	for( i in data_points){
+	    var entry = {};
+	    entry.x = data_points[i].x;
+	    entry.y = data_points[i].y[3];
+	    close_num.push(entry)
+	}
+	make_line_chart(close_num);
+}//end make_chart
+function update_figure(start,end){
+    $('#rate_chart').empty().append("<img src='./lib/loading.gif' alt='loading'>")
+    $('#line_chart').empty().append("<img src='./lib/loading.gif' alt='loading'>")
+    if(start === undefined) var start=$('#start').val();
+    if(end === undefined) var end = $('#end').val();
+    end = end.toString();
+    start = start.toString();
+    var currency = $('#currency option:selected').val();//define the currency to obtain.
+    var parameters = {};
+    parameters.start = start;
+    parameters.end = end;
+    parameters.currency = currency;
+    $.get('update_figure.php',parameters,function(res){
+        res = eval(res);
+        if(res.length === 1) {
+            alert("failed to get data!")
+            exit();
+        }
+        make_chart(res)
+    })
+}//end update figure
+
+function update_currency(){
+    update_figure()
+    update_prediction();
+    $.get('http://api.fixer.io/latest?base=USD',function(data){
+        var currency = $('#currency option:selected').val();
+        //var rate = JSON.parse(data.rates.CNY);
+        var rate = JSON.parse(data.rates[currency]);
+        var text = "Current Rate: "
+        text += rate.toString();
+        text += " " + currency + " : 1 USD.";
+        $('#current_rate').text(text);
+    })
+    garch();
+}//end update currency
+
+function toggle_line_chart(){
+    $('#line_chart').toggle();
+}
+
+function make_line_chart(data_points){
+    var chart = new CanvasJS.Chart("line_chart",
+	{
+		title:{
+			text: "Rate Line Chart",
+		},
+		exportEnabled: true,
+		exportFileName: "Rate Line Chart",
+		axisY: {
+			includeZero:false,
+			prefix: "$",
+			title: "rate",
+		},     
+		axisX: {
+			interval:1,
+			//intervalType: "month",
+			valueFormatString: "YY-MMM-DD",
+		},
+		data: [
+		{
+			type: "line",
+            dataPoints: data_points
+		}
+		]
+	});
+	chart.render();
+}//end make line chart
+
+function deep_predict(){
+    $('#prediction_chart').empty().append("<img src='./lib/loading.gif' alt='loading'>")
+    var days = $('#predict_days').val();
+    var currency = $('#currency option:selected').val();//define the currency to obtain.
+    var parameters = {};
+    parameters.predict_days = days;
+    parameters.currency = currency;
+    $.get('deep_predict.php',parameters,function(data){
+        if(data.length <= 1){
+            alert('failed to get data!')
+            exit();
+        }
+        data = eval(data);
+        make_prediction(data);
+    })
+}//end deep prediction
+
+function garch(){
+    var days = $('#predict_days').val();
+    var currency = $('#currency option:selected').val();//define the currency to obtain.
+    var parameters = {};
+    parameters.predict_days = days;
+    parameters.currency = currency;
+    $.get('garch.php',parameters,function(data){
+        if(data.length <= 1){
+            alert('failed to get data!')
+            exit();
+        }
+        data = eval(data);
+        make_garch(data);
+    })
+}//end garch
+
+function make_garch(data){
+    var data_points = [];
+    for(var i = 0;i < data.length;++i){
+        var entry = {};
+        entry.x = new Date(data[i][0]);
+        entry.y = data[i][1];
+        data_points.push(entry);
+    }
+    var chart = new CanvasJS.Chart("garch_chart",
+	{
+		title:{
+			text: "garch Prediction Chart",
+		},
+		exportEnabled: true,
+		exportFileName: "Prediction Chart",
+		axisY: {
+			includeZero:false,
+			prefix: "$",
+			title: "rate",
+		},     
+		axisX: {
+			interval:1,
+			//intervalType: "month",
+			valueFormatString: "YY-MMM-DD",
+		},
+		data: [
+		{
+			type: "line",
+            dataPoints: data_points
+		}
+		]
+	});
+	chart.render();
+}//end make garch
+
+
+;window.onload = main();
+</script>
+<center>
+<select id = 'currency'>
+    <option value='CNY' selected='selected'>CNY</option>
+    <option value='GBP'>GBP</option>
+    <option value='MXN'>MXN</option>
+    <option value='INR'>INR</option>
+    <option value='CAD'>CAD</option>
+    <option value='AUD'>AUD</option>
+    <option value='EUR'>EUR</option>
+    <option value='JPY'>JPY</option>
+</select>
+<button onclick='update_currency()'> update</button>
+<h2 id='current_rate'>Current Rate: Loading...</h2>
+<form action='#'>
+start date: <input type='date' id='start' value='2017-03-01'></input><br>
+end date: <input type='date' id='end' value='2017-04-01'></input><br>
+</form>
+<button onclick='update_figure()'>update chart</button>
+<button onclick='toggle_line_chart()'>toggle line chart</button><br>
+<div id="rate_chart" style="height: 40%; width: 80%;"><br>
+<img src='./lib/loading.gif' alt='loading'></div><br>
+<div id="line_chart" style="height: 40%; width: 80%;"></div>
+<form action='#'>
+    how many days to be predicted(1 to 7):
+    <input type='number' id='predict_days' min = '1' max='7' value='7'></input><br>
+</form>
+<button onclick='update_prediction()'>predict</button>
+<button onclick='deep_predict()'>deep predict</button>
+<button onclick='garch()'>garch_predict</button><br>
+<div id="prediction_chart" style="height: 40%; width: 80%;">
+<img src='./lib/loading.gif' alt='loading'></div><br>
+<div id='garch_chart' style="height: 40%; width: 80%;">
+<img src='./lib/loading.gif' alt='loading'></div><br>
+<h2>Suggest</h2>
+<div id='suggest'></div>
+</center>
+</body>
+</html>
